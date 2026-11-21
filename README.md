@@ -1,3 +1,15 @@
+> [!NOTE]
+> **This is a fork of [sbondCo/Watcharr](https://github.com/sbondCo/Watcharr).** It adds one feature on top of v4.4.0: a **TMDB Language** server setting, so titles, overviews and posters are fetched from TMDB in the language you choose, with English as fallback for untranslated fields.
+>
+> **Credit:** the idea and the design come from [fjacques-2025](https://github.com/fjacques-2025), author of the upstream pull request [feat: configurable metadata language (TMDB_LANG) with English fallback](https://github.com/sbondCo/Watcharr/pull/1079). This fork reimplements that work on top of v4.4.0, after the TMDB code moved to `server/media/tmdb`.
+>
+> Things to know:
+>
+> - Content already on your lists keeps its previous language until you open its page again.
+> - Search and discover results have no English fallback.
+> - No Docker image is published for this fork; build it from source with the included `Dockerfile`.
+> - Not affiliated with the Watcharr project. For the official version, use the upstream repository.
+
 <h1 align="center">Watcharr</h1>
 <p align="center"><img src="./static/logo-col.png" alt="logo" width="250" /></p>
 
