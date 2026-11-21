@@ -19,6 +19,7 @@
 	import Stat from "@/lib/stats/Stat.svelte";
 	import TwitchModal from "./modals/TwitchModal.svelte";
 	import RegionDropDown from "@/lib/RegionDropDown.svelte";
+	import LanguageDropDown from "@/lib/LanguageDropDown.svelte";
 	import TaskScheduleModal from "./modals/TaskScheduleModal.svelte";
 	import TrustedHeaderAuthModal from "./modals/TrustedHeaderAuthModal.svelte";
 	import { resolve } from "$app/paths";
@@ -40,6 +41,7 @@
 	let jfDisabled = $state(false);
 	let jfWebhookEnabledDisabled = $state(false);
 	let tmdbkDisabled = $state(false);
+	let tmdbLangDisabled = $state(false);
 	let plexHostDisabled = $state(false);
 	let countryDisabled = $state(false);
 	let useEmbyDisabled = $state(false);
@@ -299,6 +301,21 @@
 								});
 							}}
 							disabled={tmdbkDisabled}
+						/>
+					</Setting>
+					<Setting
+						title="TMDB Language"
+						desc="Language for content metadata (titles, overviews, posters). Content already on a list keeps its previous language until it is opened again."
+					>
+						<LanguageDropDown
+							selectedLang={serverConfig.TMDB_LANG || "en-US"}
+							disabled={tmdbLangDisabled}
+							onChange={(l) => {
+								tmdbLangDisabled = true;
+								updateServerConfig("TMDB_LANG", l, () => {
+									tmdbLangDisabled = false;
+								});
+							}}
 						/>
 					</Setting>
 					<Setting

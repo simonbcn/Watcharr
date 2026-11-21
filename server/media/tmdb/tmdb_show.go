@@ -38,6 +38,7 @@ func (t *TMDB) ShowDetails(o ShowDetailsOptions) (ShowDetails, error) {
 		slog.Error("ShowDetails: Request failed!", "error", err)
 		return ShowDetails{}, errors.New("request failed")
 	}
+	t.fillShowFallback(o, resp)
 	resp.WatchProvidersTransformed = transformProviders(
 		&resp.WatchProviders,
 		o.Country)
@@ -81,4 +82,26 @@ func (t *TMDB) SeasonDetails(
 	}
 	ContentStore.Set(cacheKey, resp, time.Hour*24)
 	return *resp, nil
+}
+
+// Same as fillMovieFallback, but for shows.
+func (t *TMDB) fillShowFallback(o ShowDetailsOptions, c *ShowDetails) {
+	if t.GetLang() == DefaultLang ||
+		(c.Name != "" && c.Overview != "" && c.PosterPath != "") {
+		return
+	}
+	en := new(ShowDetails)
+	if err := t.req("/tv/"+o.ID, fallbackParams(nil), &en); err != nil {
+		slog.Error("fillShowFallback: Request failed!", "error", err)
+		return
+	}
+	if c.Name == "" {
+		c.Name = en.Name
+	}
+	if c.Overview == "" {
+		c.Overview = en.Overview
+	}
+	if c.PosterPath == "" {
+		c.PosterPath = en.PosterPath
+	}
 }

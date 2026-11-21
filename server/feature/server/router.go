@@ -13,6 +13,7 @@ import (
 	"github.com/sbondCo/Watcharr/feature/auth/authmiddleware"
 	"github.com/sbondCo/Watcharr/feature/plex"
 	"github.com/sbondCo/Watcharr/feature/user/usermiddleware"
+	"github.com/sbondCo/Watcharr/media/tmdb"
 	"github.com/sbondCo/Watcharr/router"
 )
 
@@ -119,6 +120,10 @@ func (r *Router) UpdateConfig(c *gin.Context) {
 		if err != nil {
 			c.JSON(http.StatusBadRequest, router.ErrorResponse{Error: err.Error()})
 			return
+		}
+		if ur.Key == "TMDB_LANG" {
+			// Cached responses are in the previous language.
+			tmdb.ContentStore.Flush()
 		}
 		c.Status(http.StatusOK)
 		return

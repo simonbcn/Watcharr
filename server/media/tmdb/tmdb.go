@@ -20,14 +20,22 @@ type ContentProvider interface {
 	CacheContentMovie(content MovieDetails, onlyUpdate bool) (entity.Content, error)
 }
 
+// Language used when none is configured, and as the fallback for
+// fields that have no translation in the configured language.
+const DefaultLang = "en-US"
+
 type TMDB struct {
-	Key             string
+	Key string
+	// Returns the configured metadata language (may be empty).
+	// A func so a config change applies without restarting.
+	lang            func() string
 	contentProvider ContentProvider
 }
 
-func NewTMDB(key string) *TMDB {
+func NewTMDB(key string, lang func() string) *TMDB {
 	return &TMDB{
-		Key: key,
+		Key:  key,
+		lang: lang,
 	}
 }
 
@@ -40,6 +48,16 @@ func (t *TMDB) GetKey() string {
 		return t.Key //Config.TMDB_KEY
 	}
 	return "d047fa61d926371f277e7a83c9c4ff2c"
+}
+
+// Language to request metadata in (e.g. "es-ES").
+func (t *TMDB) GetLang() string {
+	if t.lang != nil {
+		if l := t.lang(); l != "" {
+			return l
+		}
+	}
+	return DefaultLang
 }
 
 func (t *TMDB) apiRequest(ep string, p map[string]string) ([]byte, error) {
@@ -55,7 +73,11 @@ func (t *TMDB) apiRequest(ep string, p map[string]string) ([]byte, error) {
 	// Query params
 	params := url.Values{}
 	params.Add("api_key", t.GetKey())
-	params.Add("language", "en-US")
+	// Callers can override the language per request (used for the
+	// fallback when a translation is missing).
+	if _, ok := p["language"]; !ok {
+		params.Add("language", t.GetLang())
+	}
 	for k, v := range p {
 		params.Add(k, v)
 	}
@@ -90,4 +112,15 @@ func (t *TMDB) req(ep string, p map[string]string, resp interface{}) error {
 		return err
 	}
 	return nil
+}
+
+// Copy of `p` with the language forced to DefaultLang.
+func fallbackParams(p map[string]string) map[string]string {
+	m := map[string]string{"language": DefaultLang}
+	for k, v := range p {
+		if k != "language" {
+			m[k] = v
+		}
+	}
+	return m
 }
