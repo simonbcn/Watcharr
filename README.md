@@ -7,7 +7,8 @@
 >
 > - Content already on your lists keeps its previous language until you open its page again.
 > - Search and discover results have no English fallback.
-> - No Docker image is published for this fork; build it from source with the included `Dockerfile`.
+> - No Docker image is published for this fork. Build and run it from source with [docker-compose.tmdb-lang.yml](./docker-compose.tmdb-lang.yml): `docker compose -f docker-compose.tmdb-lang.yml up -d --build`.
+> - The upstream `docker-compose.yml` mentioned further down pulls the official image, which does **not** include this feature.
 > - Not affiliated with the Watcharr project. For the official version, use the upstream repository.
 
 <h1 align="center">Watcharr</h1>

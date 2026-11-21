@@ -1,0 +1,18 @@
+# Compose file for this fork (configurable TMDB metadata language).
+#
+# Builds the image from the source in this repository, since no image is
+# published for the fork. The upstream `docker-compose.yml` pulls the
+# official image instead, which does not include the TMDB Language setting.
+#
+#   docker compose -f docker-compose.tmdb-lang.yml up -d --build
+services:
+  watcharr-tmdb-lang:
+    build: .
+    image: watcharr-tmdb-lang
+    container_name: watcharr-tmdb-lang
+    ports:
+      - 3080:3080
+    volumes:
+      # Contains all of watcharr data (database & cache)
+      - ./data:/data
+    restart: unless-stopped
